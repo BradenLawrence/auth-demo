@@ -28,9 +28,9 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 
-// ======
-// ROUTES
-// ======
+// ================== //
+//       ROUTES       //
+// ================== //
 
 // INDEX ROUTE
 app.get("/", function(request, response){
@@ -40,6 +40,15 @@ app.get("/", function(request, response){
 // MEMBERS ONLY ROUTE
 app.get("/members", function(request, response){
     response.render("members")
+})
+
+// AUTH ROUTES
+app.get("/signup", function(request, response){
+    response.render("signup")
+})
+
+app.post("/signup", function(request, response){
+    response.send("You totally just signed up!")
 })
 
 
