@@ -1,19 +1,41 @@
 var express                 = require("express"),
     app                     = express(),
     mongoose                = require("mongoose"),
+    bodyParser              = require("body-parser"),
+    expressSession          = require("express-session"),
+    passport                = require("passport"),
+    LocalStrategy           = require("passport-local"),
+    passportLocalMongoose   = require("passport-local-mongoose"),
+    // MODELS
+    User                    = require("./models/user")
     
-    
-// APP SETTINGS
-app.set("view engine", "ejs")
 
 // DATABASE SETTINGS
-mongoose.connect("mongodb://localhost/auth_demo")
+mongoose.connect("mongodb://localhost/auth_demo")    
+
+// APP SETTINGS
+app.set("view engine", "ejs")
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(expressSession({
+    secret: "Im Mary Poppins yall",
+    resave: false,
+    saveUninitialized: false
+}))
+
+// PASSPORT SETTINGS
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
+
+// ======
+// ROUTES
+// ======
 
 // INDEX ROUTE
 app.get("/", function(request, response){
     response.render("home")
 })
-
 
 // MEMBERS ONLY ROUTE
 app.get("/members", function(request, response){
