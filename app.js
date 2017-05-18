@@ -12,9 +12,11 @@ var express                 = require("express"),
 
 // DATABASE SETTINGS
 mongoose.connect("mongodb://localhost/auth_demo")    
+mongoose.Promise = global.Promise
 
 // APP SETTINGS
 app.set("view engine", "ejs")
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(expressSession({
@@ -28,9 +30,8 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 
-// ================== //
-//       ROUTES       //
-// ================== //
+//                   ROUTES                   //
+// ========================================== //
 
 // INDEX ROUTE
 app.get("/", function(request, response){
@@ -48,10 +49,18 @@ app.get("/signup", function(request, response){
 })
 
 app.post("/signup", function(request, response){
-    response.send("You totally just signed up!")
+    User.register(new User({username: request.body.username}), request.body.password, function(error, addedUser){
+        if(error){
+            console.log(error)
+            return response.render("register")
+        }
+        passport.authenticate("local")(request, response, function(){
+            response.redirect("/members")
+        })
+    })
 })
 
-
+// LISTENER
 app.listen(process.env.PORT, process.env.IP, function() {
     console.log("Auth server is running...")
 })
