@@ -26,6 +26,7 @@ app.use(expressSession({
 }))
 
 // PASSPORT SETTINGS
+passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
@@ -44,12 +45,15 @@ app.get("/members", function(request, response){
 })
 
 // AUTH ROUTES
+// - New user registration logic
 app.get("/signup", function(request, response){
     response.render("signup")
 })
 
 app.post("/signup", function(request, response){
-    User.register(new User({username: request.body.username}), request.body.password, function(error, addedUser){
+    User.register(new User({
+            username: request.body.username
+        }), request.body.password, function(error, addedUser){
         if(error){
             console.log(error)
             return response.render("register")
@@ -58,6 +62,17 @@ app.post("/signup", function(request, response){
             response.redirect("/members")
         })
     })
+})
+
+// - User login logic
+app.get("/login", function(request, response){
+    response.render("login")
+})
+
+app.post("/login", passport.authenticate("local", {
+    successRedirect: "/members",
+    failureRedirect: "/login"
+}), function(request, response){
 })
 
 // LISTENER
