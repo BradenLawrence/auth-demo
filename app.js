@@ -17,13 +17,13 @@ mongoose.Promise = global.Promise
 // APP SETTINGS
 app.set("view engine", "ejs")
 app.use(bodyParser.urlencoded({extended: true}))
-app.use(passport.initialize())
-app.use(passport.session())
 app.use(expressSession({
     secret: "Im Mary Poppins yall",
     resave: false,
     saveUninitialized: false
 }))
+app.use(passport.initialize())
+app.use(passport.session())
 
 // PASSPORT SETTINGS
 passport.use(new LocalStrategy(User.authenticate()))
@@ -40,7 +40,7 @@ app.get("/", function(request, response){
 })
 
 // MEMBERS ONLY ROUTE
-app.get("/members", function(request, response){
+app.get("/members", isLoggedIn, function(request, response){
     response.render("members")
 })
 
@@ -80,6 +80,19 @@ app.get("/logout", function(request, response) {
     request.logout()
     response.redirect("/")
 })
+
+
+// MIDDLEWARE
+function isLoggedIn(request, response, next){
+    console.log(request.isAuthenticated())
+    if(request.isAuthenticated()){
+        console.log("You're okay with me buddy!")
+        return next()
+    }
+    console.log("You're not on the list!")
+    response.redirect("/login")
+}
+
 
 // LISTENER
 app.listen(process.env.PORT, process.env.IP, function() {
