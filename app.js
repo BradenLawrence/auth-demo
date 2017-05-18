@@ -75,6 +75,12 @@ app.post("/login", passport.authenticate("local", {
 }), function(request, response){
 })
 
+// - Log out logic
+app.get("/logout", function(request, response) {
+    request.logout()
+    response.redirect("/")
+})
+
 // LISTENER
 app.listen(process.env.PORT, process.env.IP, function() {
     console.log("Auth server is running...")
